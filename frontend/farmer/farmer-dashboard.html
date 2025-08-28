@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | Farmer Dashboard</title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="farmer.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="logo">
+      <img src="../images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect
+    </div>
+    <nav>
+      <ul>
+        <li><a href="farmer-dashboard.html">Dashboard</a></li>
+        <li><a href="farmer-profile.html">My Account</a></li>
+        <li><a href="#" id="logoutBtn">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="dashboard-section">
+    <h2>Welcome, <span id="farmerName"></span>!</h2>
+
+    <!-- Add Product Form -->
+    <div class="product-form">
+      <h3>Add New Product</h3>
+      <form id="addProductForm">
+        <label for="productName">Name:</label>
+        <input type="text" id="productName" required>
+
+        <label for="productPrice">Price:</label>
+        <input type="number" id="productPrice" required>
+
+        <label for="productQuantity">Quantity:</label>
+        <input type="number" id="productQuantity" required>
+
+        <label for="productDescription">Description:</label>
+        <textarea id="productDescription" rows="3"></textarea>
+
+        <label for="productImage">Image URL:</label>
+        <input type="text" id="productImage">
+
+        <button type="submit" class="btn">Add Product</button>
+        <p id="productMessage" style="margin-top:1rem;"></p>
+      </form>
+    </div>
+
+    <!-- Product List -->
+    <div class="product-list">
+      <h3>My Products</h3>
+      <table id="productsTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Products will be inserted here dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Temo Connect. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '../farmer-login.html';
+    }
+
+    async function getUserInfo() {
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw data;
+
+        if (data.role !== 'farmer') {
+          alert('Access denied.');
+          window.location.href = '../index.html';
+        } else if (data.status === 'pending') {
+          window.location.href = 'farmer-pending.html';
+        } else {
+          document.getElementById('farmerName').textContent = data.name;
+        }
+      } catch (err) {
+        console.error(err);
+        window.location.href = '../farmer-login.html';
+      }
+    }
+
+    getUserInfo();
+
+    // Load Products
+    async function loadProducts() {
+      try {
+        const res = await fetch('http://localhost:5000/api/products', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const products = await res.json();
+        const tbody = document.querySelector('#productsTable tbody');
+        tbody.innerHTML = '';
+
+        products.filter(p => p.farmer_id === JSON.parse(atob(token.split('.')[1])).id)
+                .forEach(p => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${p.name}</td>
+            <td>${p.price}</td>
+            <td>${p.quantity}</td>
+            <td>${p.description || ''}</td>
+            <td>${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" width="50">` : ''}</td>
+            <td>
+              <button onclick="editProduct(${p.id})">Edit</button>
+              <button onclick="deleteProduct(${p.id})">Delete</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    loadProducts();
+
+    // Add Product
+    const addForm = document.getElementById('addProductForm');
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('productName').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        quantity: parseInt(document.getElementById('productQuantity').value),
+        description: document.getElementById('productDescription').value,
+        image_url: document.getElementById('productImage').value
+      };
+
+      try {
+        const res = await fetch('http://localhost:5000/api/products', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          document.getElementById('productMessage').style.color = 'green';
+          document.getElementById('productMessage').textContent = 'Product added successfully!';
+          addForm.reset();
+          loadProducts();
+        } else {
+          document.getElementById('productMessage').style.color = 'red';
+          document.getElementById('productMessage').textContent = result.error || 'Failed to add product.';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('productMessage').style.color = 'red';
+        document.getElementById('productMessage').textContent = 'Error connecting to server.';
+      }
+    });
+
+    // Delete Product
+    async function deleteProduct(id) {
+      if (!confirm('Are you sure you want to delete this product?')) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          loadProducts();
+        } else {
+          alert('Failed to delete product.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server.');
+      }
+    }
+
+    // Edit Product (simple prompt)
+    async function editProduct(id) {
+      const name = prompt('Enter new product name:');
+      if (!name) return;
+      const price = prompt('Enter new price:');
+      if (!price) return;
+      const quantity = prompt('Enter new quantity:');
+      if (!quantity) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/products/${id}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ name, price, quantity })
+        });
+        if (res.ok) {
+          loadProducts();
+        } else {
+          alert('Failed to update product.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server.');
+      }
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      window.location.href = '../farmer-login.html';
+    });
+  </script>
+</body>
+</html>

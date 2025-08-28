@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | Farmer Login</title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="logo">
+      <img src="images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li class="dropdown">
+          <a href="#">Register</a>
+          <ul class="dropdown-content">
+            <li><a href="farmer-register.html">Farmer</a></li>
+            <li><a href="consumer-register.html">Consumer</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#">Login</a>
+          <ul class="dropdown-content">
+            <li><a href="farmer-login.html">Farmer</a></li>
+            <li><a href="consumer-login.html">Consumer</a></li>
+          </ul>
+        </li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="about.html">About us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Farmer Login Form -->
+  <section class="form-section">
+    <h2>Farmer Login</h2>
+    <form id="farmerLoginForm">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit" class="btn">Login</button>
+      <p id="message" style="margin-top:1rem;"></p>
+    </form>
+
+    <p>Don't have an account? <a href="farmer-register.html">Register here</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Temo Connect. All rights reserved.</p>
+  </footer>
+
+  <!-- Script for login -->
+  <script>
+    const form = document.getElementById('farmerLoginForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          const user = result.user;
+          localStorage.setItem('token', result.token);
+
+          if (user.status === 'approved') {
+            message.style.color = 'green';
+            message.textContent = 'Login successful! Redirecting to your dashboard...';
+            setTimeout(() => { window.location.href = 'farmer-dashboard.html'; }, 1000);
+          } else {
+            message.style.color = 'orange';
+            message.textContent = 'Your account is pending admin approval. Redirecting...';
+            setTimeout(() => { window.location.href = 'farmer/farmer-pending.html'; }, 1000);
+          }
+
+        } else {
+          message.style.color = 'red';
+          message.textContent = result.error || 'Login failed.';
+        }
+      } catch (err) {
+        message.style.color = 'red';
+        message.textContent = 'Error: Unable to connect to server.';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

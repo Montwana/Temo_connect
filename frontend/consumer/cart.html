@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | Cart</title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="consumer-style.css">
+</head>
+<body class="cart-page">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="../images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect
+    </div>
+    <nav>
+      <ul>
+        <li><a href="consumer-home.html">Home</a></li>
+        <li><a href="consumer-product.html">Products</a></li>
+        <li><a href="consumer-contact.html">Contact</a></li>
+        <li><a href="consumer-about.html">About us</a></li>
+        <li><a href="consumer-profile.html">My Account</a></li>
+        <li>
+        <a href="cart.html" id="cartBtn">
+          🛒 Cart <span id="cartCount">0</span>
+        </a>
+        </li>
+        <li><a href="#" id="logoutBtn">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Cart Section -->
+  <section class="cart-section">
+    <h2>Your Cart</h2>
+    <div id="cartItems" class="cart-items">
+      <!-- Cart items will be dynamically added here -->
+    </div>
+
+    <div class="cart-summary">
+      <p>Total: R<span id="cartTotal">0</span></p>
+      <button class="btn" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Temo Connect. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Example cart array
+    let cart = [
+      { id: 1, name: "Fresh Tomatoes", price: 20, quantity: 2 },
+      { id: 2, name: "Green Peppers", price: 15, quantity: 1 }
+    ];
+
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartTotalEl = document.getElementById('cartTotal');
+
+    function renderCart() {
+      cartItemsContainer.innerHTML = '';
+      let total = 0;
+
+      cart.forEach(item => {
+        total += item.price * item.quantity;
+        cartItemsContainer.innerHTML += `
+          <div class="cart-item">
+            <h3>${item.name}</h3>
+            <p>Price: R${item.price}</p>
+            <label>Quantity:
+              <input type="number" min="1" value="${item.quantity}" data-id="${item.id}" class="qty-input">
+            </label>
+            <button class="remove-btn" data-id="${item.id}">Remove</button>
+          </div>
+        `;
+      });
+
+      cartTotalEl.textContent = total;
+      addEventListeners();
+    }
+
+    function addEventListeners() {
+      // Quantity change
+      document.querySelectorAll('.qty-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const id = parseInt(e.target.dataset.id);
+          const item = cart.find(i => i.id === id);
+          item.quantity = parseInt(e.target.value);
+          renderCart();
+        });
+      });
+
+      // Remove item
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = parseInt(e.target.dataset.id);
+          cart = cart.filter(i => i.id !== id);
+          renderCart();
+        });
+      });
+
+      // Checkout button
+      document.getElementById('checkoutBtn').addEventListener('click', () => {
+        alert('Proceeding to checkout...');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCart);
+  </script>
+</body>
+</html>

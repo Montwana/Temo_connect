@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | Admin Dashboard</title>
+  <link rel="stylesheet" href="admin-style.css">
+  <link rel="icon" href="../images/logo2.png">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="../images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect Admin
+    </div>
+    <nav>
+      <ul>
+        <li><a href="admin-dashboard.html">Dashboard</a></li>
+        <li><a href="admin-farmers.html">Pending Farmers</a></li>
+        <li><a href="admin-products.html">Products</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="dashboard-section">
+    <h2>Pending Farmers</h2>
+    <table id="pendingFarmersTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Farm Name</th>
+          <th>Location</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Temo Connect. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Check token
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'admin-login.html'; // same folder
+
+    // Verify user is admin
+    async function checkAdmin() {
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const user = await res.json();
+        if (!user || user.role !== 'admin') {
+          localStorage.removeItem('token');
+          window.location.href = 'admin-login.html';
+        }
+      } catch {
+        localStorage.removeItem('token');
+        window.location.href = 'admin-login.html';
+      }
+    }
+    checkAdmin();
+
+    // Load pending farmers
+    async function loadPendingFarmers() {
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/farmers/pending', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const farmers = await res.json();
+        const tbody = document.querySelector('#pendingFarmersTable tbody');
+        tbody.innerHTML = '';
+        farmers.forEach(f => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${f.name}</td>
+            <td>${f.email}</td>
+            <td>${f.farm_name || ''}</td>
+            <td>${f.location || ''}</td>
+            <td>
+              <button onclick="approveFarmer(${f.id})">Approve</button>
+              <button onclick="rejectFarmer(${f.id})">Reject</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) { console.error(err); }
+    }
+    loadPendingFarmers();
+
+    async function approveFarmer(id) {
+      if (!confirm('Approve this farmer?')) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/farmers/${id}/approve`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) loadPendingFarmers();
+        else alert('Failed to approve.');
+      } catch { alert('Error connecting to server.'); }
+    }
+
+    async function rejectFarmer(id) { alert('Reject feature not implemented yet'); }
+
+  </script>
+</body>
+</html>

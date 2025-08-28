@@ -1,0 +1,351 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f8f8;
+}
+
+/* Header */
+header {
+  background: #2e7d32;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+header .logo {
+  display: flex;
+  align-items: center;  /* centers image and text vertically */
+  font-size: 1.5rem;
+  font-weight: bold;
+  gap: 8px;             /* space between image and text (adjust as needed) */
+}
+
+.logo img {
+  height: 50px;   /* adjust size */
+  width: auto;    /* keeps proportions */
+}
+
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+/* Dropdown container */
+nav ul li.dropdown {
+  position: relative;
+}
+
+/* Hide dropdown content by default */
+nav ul li .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #2e7d32;
+  min-width: 150px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+/* Dropdown items */
+nav ul li .dropdown-content li a {
+  color: #fff;
+  padding: 0.8rem 1rem;
+  display: block;
+  text-decoration: none;
+}
+
+nav ul li .dropdown-content li a:hover {
+  background-color: #1b5e20;
+}
+
+/* Show dropdown on hover */
+nav ul li.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+/* Hero */
+.hero {
+  text-align: center;
+  background: url('images/farm.jpg') no-repeat center center/cover;
+  color: white;
+    padding: 60px 20px;
+  padding: 5rem 2rem;
+    position: relative;
+      text-align: center;
+}
+
+.hero-search {
+  position: absolute;
+  top: 20px;         /* distance from the top */
+  right: 30px;       /* keep it on the right side */
+  width: 450px;      /* control total width */
+}
+
+.hero-search input {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  width: 100%;       /* now fills the .hero-search width */
+  font-size: 1rem;
+}
+
+
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+
+
+.btn {
+  background: #ffb300;
+  color: #333;
+  padding: 0.8rem 1.5rem;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: #ffa000;
+}
+.see-more-container {
+  text-align: right;   /* align button to the right */
+  margin-top: 20px;    /* space above button */
+}
+
+.see-more-container .btn {
+  background-color: #4CAF50; /* green button */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.see-more-container .btn:hover {
+  background-color: #45a049; /* darker green */
+}
+
+
+/* Intro */
+.intro {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #fff;
+}
+
+.intro h2 {
+  color: #2e7d32;
+  margin-bottom: 1rem;
+}
+
+.intro p {
+  max-width: 700px;
+  margin: auto;
+  font-size: 1.1rem;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  background: #2e7d32;
+  color: #fff;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+
+/*farmer-register*/
+/* Form Section */
+.form-section {
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-section h2 {
+  text-align: center;
+  color: #2e7d32;
+  margin-bottom: 1.5rem;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+form input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form input:focus {
+  border-color: #2e7d32;
+  outline: none;
+}
+
+form .btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+form .btn:hover {
+  background: #1b5e20;
+}
+
+/* Products Section */
+.products-section {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #f8f8f8;
+}
+
+.products-section h2 {
+  color: #2e7d32;
+  margin-bottom: 2rem;
+}
+
+/* Search Bar Styling */
+.search-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+#searchInput {
+  width: 50%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #4CAF50; /* green theme */
+  border-radius: 25px;
+  outline: none;
+  transition: 0.3s;
+}
+
+#searchInput:focus {
+  border-color: #2e7d32; /* darker green on focus */
+  box-shadow: 0 0 8px rgba(46, 125, 50, 0.5);
+}
+
+@media (max-width: 768px) {
+  #searchInput {
+    width: 80%;
+  }
+}
+
+/* Product Grid Layout */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 items per row */
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+}
+
+/* Responsive Adjustments for Product Grid */
+@media (max-width: 1200px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 items per row */
+  }
+}
+
+@media (max-width: 900px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 items per row */
+  }
+}
+
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: 1fr; /* 1 item per row on mobile */
+  }
+}
+
+/* Product Card */
+.product-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.product-card h3 {
+  color: #2e7d32;
+  margin-bottom: 0.5rem;
+}
+
+.product-card p {
+  margin-bottom: 0.5rem;
+}
+
+.product-card .btn {
+  padding: 0.5rem 1rem;
+  background: #ffb300;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.product-card .btn:hover {
+  background: #ffa000;
+}

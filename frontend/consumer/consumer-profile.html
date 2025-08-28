@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | My Account</title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="consumer-style.css">
+</head>
+<body class="profile-page">
+
+  <!-- Navigation -->
+  <header>
+    <div class="logo">
+      <img src="images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect
+    </div>
+    <nav>
+      <ul>
+        <li><a href="consumer-home.html">Home</a></li>
+        <li><a href="consumer-product.html">Products</a></li>
+        <li><a href="consumer-contact.html">Contact</a></li>
+        <li><a href="consumer-about.html">About us</a></li>
+        <li><a href="consumer-profile.html">My Account</a></li>
+        <li>
+        <a href="cart.html" id="cartBtn">
+          🛒 Cart <span id="cartCount">0</span>
+        </a>
+        </li>
+      <li><a href="../index.html" id="logoutBtn">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Profile Section -->
+  <section class="profile-section">
+    <h2>My Account</h2>
+    <p>Update your profile information below.</p>
+
+    <form id="profileForm">
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" required placeholder="Your Name">
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required placeholder="Your Email">
+
+      <label for="password">New Password:</label>
+      <input type="password" id="password" name="password" placeholder="Enter new password">
+
+      <label for="confirmPassword">Confirm Password:</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">
+
+      <button type="submit" class="btn">Save Changes</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Temo Connect. All rights reserved.</p>
+  </footer>
+
+  <!-- Script to handle form submission -->
+  <script>
+    // Example: Load current user info
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const token = localStorage.getItem("token"); // if using JWT
+        const res = await fetch("http://localhost:5000/api/auth/me", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if(data.user){
+          document.getElementById("name").value = data.user.name;
+          document.getElementById("email").value = data.user.email;
+        }
+      } catch(err){
+        console.error("Failed to load user info", err);
+      }
+    });
+
+    document.getElementById("profileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if(password && password !== confirmPassword){
+        alert("Passwords do not match!");
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:5000/api/auth/me", {
+          method: "PUT",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ name, email, password: password || undefined })
+        });
+
+        const result = await res.json();
+        if(result.error){
+          alert(result.error);
+        } else {
+          alert("Profile updated successfully!");
+        }
+      } catch(err){
+        console.error(err);
+        alert("Error updating profile.");
+      }
+    });
+  </script>
+</body>
+</html>

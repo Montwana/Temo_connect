@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | Products</title>
+  <link rel="icon" href="/images/logo.png" type="image/png">
+  <link rel="stylesheet" href="consumer-style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="logo">
+      <img src="../images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="consumer-home.html">Home</a></li>
+        <li><a href="consumer-product.html">Products</a></li>
+        <li><a href="consumer-contact.html">Contact</a></li>
+        <li><a href="consumer-about.html">About us</a></li>
+        <li><a href="consumer-profile.html">My Account</a></li>
+        <li>
+        <a href="cart.html" id="cartBtn">
+          🛒 Cart <span id="cartCount">0</span>
+        </a>
+        </li>
+      <li><a href="../index.html" id="logoutBtn">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Products Section -->
+  <section class="products-section">
+    <h2>Available Products</h2>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search for products..." onkeyup="filterProducts()">
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid" id="productGrid"></div>
+  </section>
+
+  <!-- Scripts -->
+  <script>
+    let allProducts = [];
+    const defaultVisible = 8; // number of products to show by default
+
+    async function loadProducts() {
+      const res = await fetch("http://localhost:5000/api/products");
+      allProducts = await res.json();
+      renderProducts();
+    }
+
+    function renderProducts(search = "") {
+      const grid = document.getElementById("productGrid");
+      let html = "";
+
+      allProducts.forEach((p, index) => {
+        const nameLower = p.name.toLowerCase();
+        const showProduct = index < defaultVisible || (search && nameLower.includes(search));
+        const displayStyle = showProduct ? "" : "display:none";
+
+        html += `
+          <div class="product-card" style="${displayStyle}">
+            <img src="${p.image_url || '/images/placeholder.jpg'}" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <p>Price: R${p.price}</p>
+            <p>Farmer: ${p.farmer_name}</p>
+            <a href="consumer-login.html" class="btn">Buy</a>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = html;
+    }
+
+    function filterProducts() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      renderProducts(input);
+    }
+
+    document.addEventListener("DOMContentLoaded", loadProducts);
+  </script>
+</body>
+</html>

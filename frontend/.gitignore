@@ -1,0 +1,24 @@
+# Ignore database files
+*.db
+*.sqlite
+*.sql  # only if contains sensitive info
+
+# Ignore config and environment files
+config.env
+.env
+
+# Java/JSF build files
+*.class
+*.jar
+*.war
+target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Node/Frontend dependencies (if any)
+node_modules/
+dist/
+build/

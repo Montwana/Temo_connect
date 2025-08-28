@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temo Connect | My Account</title>
+  <link rel="icon" href="../images/logo.png" type="image/png">
+  <link rel="stylesheet" href="farmer.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="logo">
+      <img src="../images/logo2.png" alt="Temo Connect Logo">
+      Temo Connect
+    </div>
+    <nav>
+    <ul>
+      <li><a href="farmer-pending.html">Home</a></li>
+      <li><a href="farmer-about.html">About Us</a></li>
+      <li><a href="farmer-contact.html">Support</a></li>
+      <li><a href="../index.html" id="logoutBtn">Logout</a></li>
+    </ul>
+  </nav>
+  </header>
+
+  <!-- Pending Farmer Account Section -->
+  <section class="form-section">
+    <h2>My Account (Pending Approval)</h2>
+    <p>Your account is pending approval. You can update your personal information, but you will not be able to post products until approved.</p>
+    
+<form id="pendingAccountForm">
+  <label for="name">Full Name:</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="farmName">Farm Name:</label>
+  <input type="text" id="farmName" name="farmName" required>
+
+  <label for="location">Farm Location:</label>
+  <input type="text" id="location" name="location" required>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+
+  <label for="contact">Contact Number:</label>
+  <input type="tel" id="contact" name="contact" required>
+
+  <button type="submit" class="btn">Update Info</button>
+  <p id="responseMessage" style="margin-top:1rem;"></p>
+</form>
+
+<script>
+  // Get the logged-in user info from localStorage (set during login)
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  if (user) {
+    document.getElementById('name').value = user.name || '';
+    document.getElementById('farmName').value = user.farm_name || '';
+    document.getElementById('location').value = user.location || '';
+    document.getElementById('email').value = user.email || '';
+    document.getElementById('contact').value = user.contact || '';
+  }
+
+  const form = document.getElementById('pendingAccountForm');
+  const responseMessage = document.getElementById('responseMessage');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const updatedData = {
+      name: document.getElementById('name').value,
+      farm_name: document.getElementById('farmName').value,
+      location: document.getElementById('location').value,
+      email: document.getElementById('email').value,
+      contact: document.getElementById('contact').value
+    };
+
+    try {
+      // Example API call to update farmer info
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/farmers/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        responseMessage.style.color = 'green';
+        responseMessage.textContent = 'Your information has been updated successfully!';
+        // Optionally update localStorage
+        localStorage.setItem('user', JSON.stringify({...user, ...updatedData}));
+      } else {
+        responseMessage.style.color = 'red';
+        responseMessage.textContent = result.error || 'Update failed.';
+      }
+    } catch (err) {
+      responseMessage.style.color = 'red';
+      responseMessage.textContent = 'Error: Unable to connect to server.';
+      console.error(err);
+    }
+  });
+</script>
+
+</body>
+</html>
